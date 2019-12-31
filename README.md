@@ -51,6 +51,19 @@ It provides
    A list of actions are shown, for example, open the result in other window,
    open the result in other window without focus, ....
  
+#### Other hints when using ivy completion (not directly related to this package)
+
+Bind `ivy-avy` (if you use [avy](https://github.com/abo-abo/avy)) for quick selection:
+
+```elisp
+(define-key ivy-minibuffer-map (kbd "M-'") 'ivy-avy)
+```
+
+When in ivy minibuffer, one can use 
+- `C-M-m` to preview the current candidate (select the candidate while remain the point in the minibuffer).
+- `C-M-n` to preview the next candidate.
+- `C-M-p` to preview the previous candidate.
+
 ### Other Emacs cscope packages:
 - [xcscope.el](https://github.com/dkogan/xcscope.el)
 
