@@ -45,7 +45,7 @@
 ;; Bind the key map:
 ;;     (define-key c-mode-base-map (kbd "C-c j c") ivy-cscope-command-map)
 ;;
-;; For quich access:
+;; For quick access:
 ;;     (define-key c-mode-base-map (kbd "M-.") 'ivy-cscope-find-definition-at-point)
 ;;     (define-key c-mode-base-map (kbd "M-,") 'ivy-cscope-pop-mark)
 ;;     (define-key c-mode-base-map [M-mouse-1] 'ivy-cscope-find-definition-at-point)
@@ -60,12 +60,7 @@
 ;;     drivers/infiniband/core/umem_odp.c ...
 ;;     fs/io_uring.c ...
 ;;     mm/gup.c ...
-;;
-;;     For simplicity, I don't write each of them all down here.
-;; 4. For example, one is interested in the second result.  He can use `ivy-avy'
-;;    for quich selecting the result if it is bind like this
-;;        (define-key ivy-minibuffer-map (kbd "M-'") 'ivy-avy)
-;; 5. Or, he can move to the second line and press "M-o" to trigger ivy actions.
+;; 4. He can move to the second line and press "M-o" to trigger ivy actions.
 ;;    A list of actions are shown, for example, open the result in other window,
 ;;    open the result in other window without focus, ....
 ;; 
