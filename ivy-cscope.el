@@ -142,10 +142,13 @@ Returns nil if error."
 	    (func (substring entry (match-beginning 2) (match-end 2)))
 	    (lnum (substring entry (match-beginning 3) (match-end 3)))
 	    (line (substring entry (match-beginning 4) (match-end 4))))
-	(list (concat (file-remote-p default-directory) path)
-	      func
-	      (string-to-number lnum)
-	      line))
+	(list
+	 (if (file-name-absolute-p path)
+	     (concat (file-remote-p default-directory) path)
+	   (concat (ivy-cscope--get-root-dir) path))
+	 func
+	 (string-to-number lnum)
+	 line))
     nil))
 
 (defun ivy-cscope--mark-current-position ()
@@ -157,17 +160,15 @@ Returns nil if error."
   (let ((ent (ivy-cscope--parse-cscope-entry entry)))
     (when ent
       (ivy-cscope--mark-current-position)
-      (let ((default-directory (ivy-cscope--get-root-dir)))
-	(find-file (nth 0 ent))
-	(goto-line (nth 2 ent))))))
+      (find-file (nth 0 ent))
+      (goto-line (nth 2 ent)))))
 
 (defun ivy-cscope--select-action-other-window (entry)
   (let ((ent (ivy-cscope--parse-cscope-entry entry)))
     (when ent
       (ivy-cscope--mark-current-position)
-      (let ((default-directory (ivy-cscope--get-root-dir)))
-	(find-file-other-window (nth 0 ent))
-	(goto-line (nth 2 ent))))))
+      (find-file-other-window (nth 0 ent))
+      (goto-line (nth 2 ent)))))
 
 (defun ivy-cscope--select-action-other-window-not-focus (entry)
   (let ((ent (ivy-cscope--parse-cscope-entry entry)))
@@ -175,17 +176,15 @@ Returns nil if error."
       (ivy-cscope--mark-current-position)
       (with-ivy-window
 	(save-excursion
-	  (let ((default-directory (ivy-cscope--get-root-dir)))
-	    (find-file-other-window (nth 0 ent))
-	    (goto-line (nth 2 ent))))))))
+	  (find-file-other-window (nth 0 ent))
+	  (goto-line (nth 2 ent)))))))
 
 (defun ivy-cscope--select-action-other-frame (entry)
   (let ((ent (ivy-cscope--parse-cscope-entry entry)))
     (when ent
       (ivy-cscope--mark-current-position)
-      (let ((default-directory (ivy-cscope--get-root-dir)))
-	(find-file-other-frame (nth 0 ent))
-	(goto-line (nth 2 ent))))))
+      (find-file-other-frame (nth 0 ent))
+      (goto-line (nth 2 ent)))))
 
 (defun ivy-cscope--find (menu query &optional disable-fast-select)
   (let ((result (ivy-cscope--do-search menu query)))
