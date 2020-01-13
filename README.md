@@ -8,8 +8,8 @@ window without focus) on the jump candidates.
 It provides
 - `ivy-cscope-find-xxx`: 9 functions each for cscope's menu
   (e.g. symbol, definition, assignment, calling, ...).
-- `ivy-cscope-find-definition-at-point`: find the definition
-  of the symbol at point.
+- `ivy-cscope-find-definition-at-point`: a handy command to find the
+  definition of the symbol at point.
 - `ivy-cscope-pop-mark`: jump back to the location before the
   last `ivy-cscope-xxxx` jump."
 - `ivy-cscope-command-map`: a keymap of all the commands
@@ -63,6 +63,7 @@ When in ivy minibuffer, one can use
 - `C-M-m` to preview the current candidate (select the candidate while remain the point in the minibuffer).
 - `C-M-n` to preview the next candidate.
 - `C-M-p` to preview the previous candidate.
+- `C-g` to abort the preview.
 
 ### Other Emacs cscope packages:
 - [xcscope.el](https://github.com/dkogan/xcscope.el)
