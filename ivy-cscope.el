@@ -70,6 +70,7 @@
 
 (require 'projectile)
 (require 'ivy)
+(require 'pulse)
 
 (defgroup ivy-cscope nil
   "Cscope with the interface of ivy."
@@ -156,39 +157,45 @@ Returns nil if error."
   (ring-insert-at-beginning ivy-cscope-marker-ring
 			    (cons (current-buffer) (point))))
 
-(defun ivy-cscope--select-action (entry)
+(defun ivy-cscope--pulse-momentarily ()
+  "Give a visual pulse on the current line"
+  (pcase-let ((`(,beg . ,end)
+               (save-excursion
+                 (or (back-to-indentation)
+                     (if (eolp)
+			 (cons (line-beginning-position) (1+ (point)))
+                       (cons (point) (line-end-position)))))))
+    (pulse-momentary-highlight-region beg end 'next-error)))
+
+(defun ivy-cscope--jump-to (method filename linum)
+  (ivy-cscope--mark-current-position)
+  (funcall method filename)
+  (goto-char (point-min))
+  (forward-line (1- linum))
+  (ivy-cscope--pulse-momentarily))
+
+(defun ivy-cscope--select-entry (entry)
   (let ((ent (ivy-cscope--parse-cscope-entry entry)))
     (when ent
-      (ivy-cscope--mark-current-position)
-      (find-file (nth 0 ent))
-      (goto-char (point-min))
-      (forward-line (1- (nth 2 ent))))))
+      (ivy-cscope--jump-to 'find-file (nth 0 ent) (nth 2 ent)))))
 
-(defun ivy-cscope--select-action-other-window (entry)
+(defun ivy-cscope--select-entry-other-window (entry)
   (let ((ent (ivy-cscope--parse-cscope-entry entry)))
     (when ent
-      (ivy-cscope--mark-current-position)
-      (find-file-other-window (nth 0 ent))
-      (goto-char (point-min))
-      (forward-line (1- (nth 2 ent))))))
+      (ivy-cscope--jump-to 'find-file-other-window (nth 0 ent) (nth 2 ent)))))
 
-(defun ivy-cscope--select-action-other-window-not-focus (entry)
+(defun ivy-cscope--select-entry-other-window-not-focus (entry)
   (let ((ent (ivy-cscope--parse-cscope-entry entry)))
     (when ent
       (ivy-cscope--mark-current-position)
       (with-ivy-window
 	(save-excursion
-	  (find-file-other-window (nth 0 ent))
-	  (goto-char (point-min))
-	  (forward-line (1- (nth 2 ent))))))))
+	  (ivy-cscope--jump-to 'find-file-other-window (nth 0 ent) (nth 2 ent)))))))
 
-(defun ivy-cscope--select-action-other-frame (entry)
+(defun ivy-cscope--select-entry-other-frame (entry)
   (let ((ent (ivy-cscope--parse-cscope-entry entry)))
     (when ent
-      (ivy-cscope--mark-current-position)
-      (find-file-other-frame (nth 0 ent))
-      (goto-char (point-min))
-      (forward-line (1- (nth 2 ent))))))
+      (ivy-cscope--jump-to 'find-file-other-frame (nth 0 ent) (nth 2 ent)))))
 
 (defun ivy-cscope--find (menu query &optional disable-fast-select)
   (let ((result (ivy-cscope--do-search menu query)))
@@ -196,18 +203,18 @@ Returns nil if error."
 	(message "Error, see buffer *ivy-cscope error*")
       (let ((col (split-string result "\n" t)))
 	(if (and (not disable-fast-select) (= (length col) 1))
-	    (ivy-cscope--select-action (car col))
+	    (ivy-cscope--select-entry (car col))
 	  (ivy-read "Result: "
 		    col
 		    :require-match t
-		    :action 'ivy-cscope--select-action
+		    :action 'ivy-cscope--select-entry
 		    :caller 'ivy-cscope--find))))))
 
 (ivy-set-actions
  'ivy-cscope--find
- '(("j" ivy-cscope--select-action-other-window "other window")
-   ("s" ivy-cscope--select-action-other-window-not-focus "show")
-   ("F" ivy-cscope--select-action-other-frame "other frame")))
+ '(("j" ivy-cscope--select-entry-other-window "other window")
+   ("s" ivy-cscope--select-entry-other-window-not-focus "show")
+   ("F" ivy-cscope--select-entry-other-frame "other frame")))
 
 ;;;###autoload
 (defun ivy-cscope-pop-mark ()
@@ -218,7 +225,8 @@ Returns nil if error."
 	   (buf (car m))
 	   (pos (cdr m)))
       (switch-to-buffer buf)
-      (goto-char pos))))
+      (goto-char pos)
+      (ivy-cscope--pulse-momentarily))))
 
 ;;;###autoload
 (defun ivy-cscope-find-symbol (query)
