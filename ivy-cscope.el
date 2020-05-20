@@ -161,14 +161,16 @@ Returns nil if error."
     (when ent
       (ivy-cscope--mark-current-position)
       (find-file (nth 0 ent))
-      (goto-line (nth 2 ent)))))
+      (goto-char (point-min))
+      (forward-line (1- (nth 2 ent))))))
 
 (defun ivy-cscope--select-action-other-window (entry)
   (let ((ent (ivy-cscope--parse-cscope-entry entry)))
     (when ent
       (ivy-cscope--mark-current-position)
       (find-file-other-window (nth 0 ent))
-      (goto-line (nth 2 ent)))))
+      (goto-char (point-min))
+      (forward-line (1- (nth 2 ent))))))
 
 (defun ivy-cscope--select-action-other-window-not-focus (entry)
   (let ((ent (ivy-cscope--parse-cscope-entry entry)))
@@ -177,14 +179,16 @@ Returns nil if error."
       (with-ivy-window
 	(save-excursion
 	  (find-file-other-window (nth 0 ent))
-	  (goto-line (nth 2 ent)))))))
+	  (goto-char (point-min))
+	  (forward-line (1- (nth 2 ent))))))))
 
 (defun ivy-cscope--select-action-other-frame (entry)
   (let ((ent (ivy-cscope--parse-cscope-entry entry)))
     (when ent
       (ivy-cscope--mark-current-position)
       (find-file-other-frame (nth 0 ent))
-      (goto-line (nth 2 ent)))))
+      (goto-char (point-min))
+      (forward-line (1- (nth 2 ent))))))
 
 (defun ivy-cscope--find (menu query &optional disable-fast-select)
   (let ((result (ivy-cscope--do-search menu query)))
